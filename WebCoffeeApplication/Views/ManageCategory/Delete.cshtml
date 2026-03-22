@@ -1,0 +1,59 @@
+@model DanhMucDoUong
+
+@{
+  ViewData["Title"] = "Xóa danh mục đồ uống";
+}
+
+<h1>Xóa danh mục đồ uống</h1>
+
+<h3>Bạn có chắc chắn muốn xóa danh mục này?</h3>
+
+<div>
+  <hr />
+  <dl class="row">
+    <dt class="col-sm-2">Tên danh mục</dt>
+    <dd class="col-sm-10">@Model.TenDanhMuc</dd>
+  </dl>
+
+  @if (ViewBag.SoLuongDoUong > 0)
+  {
+    <div class="alert alert-warning">
+      <strong>Cảnh báo:</strong> Danh mục này có <strong>@ViewBag.SoLuongDoUong</strong> đồ uống liên quan.
+      Tất cả đồ uống và chi tiết của chúng sẽ bị xóa cùng với danh mục này.
+    </div>
+  }
+
+  <div class="form-group">
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+  </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn xóa danh mục <strong>@Model.TenDanhMuc</strong> không?</p>
+        @if (ViewBag.SoLuongDoUong > 0)
+        {
+          <p class="text-warning">
+            <strong>@ViewBag.SoLuongDoUong</strong> đồ uống liên quan sẽ bị xóa cùng với danh mục này.
+          </p>
+        }
+        <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <form asp-action="Delete" method="post" style="display:inline;">
+          <input type="hidden" asp-for="MaDanhMucDoUong" />
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,265 @@
+@model IEnumerable<HoaDon>
+
+@{
+  ViewData["Title"] = "Quản lý doanh thu";
+  var filterType = (ViewData["FilterType"]?.ToString() ?? "day").ToLower();
+  var selectedDate = ViewData["SelectedDate"]?.ToString();
+  var selectedMonth = ViewData["SelectedMonth"]?.ToString();
+  var selectedYear = ViewData["SelectedYear"]?.ToString();
+  var totalRevenue = (decimal)(ViewData["TotalRevenue"] ?? 0m);
+  var availableYears = ViewData["AvailableYears"] as List<int> ?? new List<int>();
+}
+
+<h1>Quản lý doanh thu</h1>
+
+<style>
+  #revenueFilterForm .revenue-filter-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  #revenueFilterForm .revenue-filter-control {
+    min-height: 38px;
+  }
+
+  #revenueFilterForm .filter-feedback-slot {
+    min-height: 1.2rem;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: var(--bs-danger);
+    visibility: hidden;
+  }
+
+  #revenueFilterForm .filter-feedback-slot.active {
+    visibility: visible;
+  }
+
+  #revenueFilterForm .filter-actions {
+    justify-content: flex-end;
+  }
+
+  #revenueFilterForm .filter-actions-buttons {
+    min-height: 38px;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  #revenueFilterForm .filter-field-inactive .form-label {
+    color: var(--bs-secondary-color);
+  }
+
+  #revenueFilterForm .filter-field-inactive .form-control,
+  #revenueFilterForm .filter-field-inactive .form-select {
+    background-color: var(--bs-secondary-bg);
+    border-color: var(--bs-border-color);
+    opacity: 0.75;
+  }
+  
+  @@media (max-width: 767.98px) {
+    #revenueFilterForm .filter-actions-buttons {
+      display: grid;
+    }
+  }
+</style>
+
+<!-- Bước 1: Form lọc doanh thu theo ngày, tháng hoặc năm. -->
+<form asp-action="Index" method="get" class="mb-3" id="revenueFilterForm" novalidate>
+  <div class="row g-2 align-items-start">
+    <div class="col-12 col-md-3 revenue-filter-col">
+      <label class="form-label" for="filterType">Kiểu lọc</label>
+      <select class="form-select revenue-filter-control" id="filterType" name="filterType">
+        <option value="day" selected="@(filterType == "day")">Theo ngày</option>
+        <option value="month" selected="@(filterType == "month")">Theo tháng</option>
+        <option value="year" selected="@(filterType == "year")">Theo năm</option>
+      </select>
+      <div class="filter-feedback-slot"></div>
+    </div>
+
+    <div class="col-12 col-md-3 revenue-filter-col" id="dayFilterGroup">
+      <label class="form-label" for="selectedDate">Ngày</label>
+      <input type="date" class="form-control revenue-filter-control" id="selectedDate" name="selectedDate" value="@selectedDate" />
+      <div class="filter-feedback-slot">Vui lòng chọn ngày để lọc doanh thu.</div>
+    </div>
+
+    <div class="col-12 col-md-2 revenue-filter-col" id="monthFilterGroup">
+      <label class="form-label" for="selectedMonth">Tháng</label>
+      <select class="form-select revenue-filter-control" id="selectedMonth" name="selectedMonth">
+        <option value="">-- Chọn tháng --</option>
+        @for (int i = 1; i <= 12; i++)
+        {
+          <option value="@i" selected="@(selectedMonth == i.ToString())">@i</option>
+        }
+      </select>
+      <div class="filter-feedback-slot">Vui lòng chọn tháng để lọc doanh thu.</div>
+    </div>
+
+    <div class="col-12 col-md-2 revenue-filter-col" id="yearFilterGroup">
+      <label class="form-label" for="selectedYear">Năm</label>
+      <select class="form-select revenue-filter-control" id="selectedYear" name="selectedYear">
+        <option value="">-- Chọn năm --</option>
+        @foreach (var year in availableYears)
+        {
+          <option value="@year" selected="@(selectedYear == year.ToString())">@year</option>
+        }
+      </select>
+      <div class="filter-feedback-slot">Vui lòng chọn năm để lọc doanh thu.</div>
+    </div>
+
+    <div class="col-12 col-md-2 filter-actions revenue-filter-col">
+      <label class="form-label" aria-hidden="true">Thao tác</label>
+      <div class="filter-actions-buttons">
+        <button type="submit" class="btn btn-primary">Lọc</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Đặt lại</a>
+      </div>
+      <div class="filter-feedback-slot"></div>
+    </div>
+  </div>
+</form>
+
+<!-- Bước 2: Hiển thị nhanh tổng doanh thu của kết quả lọc hiện tại. -->
+<div class="alert alert-success">
+  <strong>Tổng doanh thu:</strong> @totalRevenue.ToString("N0")đ
+</div>
+
+<!-- Bước 3: Hiển thị danh sách hóa đơn đã thanh toán theo thứ tự mới nhất -> cũ nhất. -->
+<table class="table table-striped table-bordered align-middle">
+  <thead>
+    <tr>
+      <th>Mã HĐ</th>
+      <th>Ngày thanh toán</th>
+      <th>Số bàn</th>
+      <th>Nhân viên</th>
+      <th>Tổng tiền</th>
+      <th>Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (Model.Any())
+    {
+      foreach (var item in Model)
+      {
+        <tr>
+          <td>@item.MaHoaDon</td>
+          <td>@item.NgayTao?.ToString("dd/MM/yyyy HH:mm")</td>
+          <td>@item.SoBan</td>
+          <td>@item.TaiKhoan?.HoTen</td>
+          <td>@item.TongTien?.ToString("N0")đ</td>
+          <td>
+            <a asp-action="Details" asp-route-id="@item.MaHoaDon" class="btn btn-sm btn-info">Chi tiết</a>
+          </td>
+        </tr>
+      }
+    }
+    else
+    {
+      <tr>
+        <td colspan="6" class="text-center text-muted">Không có dữ liệu doanh thu theo bộ lọc hiện tại.</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+@section Scripts {
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Bước 4: Hiển thị đúng input lọc theo kiểu lọc hiện tại.
+      var filterForm = document.getElementById('revenueFilterForm');
+      var filterTypeEl = document.getElementById('filterType');
+      var dayGroup = document.getElementById('dayFilterGroup');
+      var monthGroup = document.getElementById('monthFilterGroup');
+      var yearGroup = document.getElementById('yearFilterGroup');
+      var selectedDateEl = document.getElementById('selectedDate');
+      var selectedMonthEl = document.getElementById('selectedMonth');
+      var selectedYearEl = document.getElementById('selectedYear');
+      var dayFeedbackEl = dayGroup.querySelector('.filter-feedback-slot');
+      var monthFeedbackEl = monthGroup.querySelector('.filter-feedback-slot');
+      var yearFeedbackEl = yearGroup.querySelector('.filter-feedback-slot');
+
+      function setFieldState(groupElement, inputElement, isActive) {
+        groupElement.classList.toggle('filter-field-inactive', !isActive);
+        inputElement.disabled = !isActive;
+      }
+
+      function resetValidationState(element, feedbackElement) {
+        element.classList.remove('is-invalid');
+        feedbackElement.classList.remove('active');
+      }
+
+      function invalidateField(element, feedbackElement, message) {
+        element.classList.add('is-invalid');
+        feedbackElement.textContent = message;
+        feedbackElement.classList.add('active');
+      }
+
+      function clearAllValidation() {
+        resetValidationState(selectedDateEl, dayFeedbackEl);
+        resetValidationState(selectedMonthEl, monthFeedbackEl);
+        resetValidationState(selectedYearEl, yearFeedbackEl);
+      }
+
+      function updateFilterInputs() {
+        var type = filterTypeEl.value;
+        var requiresYear = type === 'month' || type === 'year';
+
+        setFieldState(dayGroup, selectedDateEl, type === 'day');
+        setFieldState(monthGroup, selectedMonthEl, type === 'month');
+        setFieldState(yearGroup, selectedYearEl, requiresYear);
+
+        clearAllValidation();
+      }
+
+      selectedDateEl.addEventListener('input', function () {
+        resetValidationState(selectedDateEl, dayFeedbackEl);
+      });
+
+      selectedMonthEl.addEventListener('change', function () {
+        resetValidationState(selectedMonthEl, monthFeedbackEl);
+      });
+
+      selectedYearEl.addEventListener('change', function () {
+        resetValidationState(selectedYearEl, yearFeedbackEl);
+      });
+
+      filterForm.addEventListener('submit', function (event) {
+        var type = filterTypeEl.value;
+        var requiresYear = type === 'month' || type === 'year';
+        var isDateEmpty = !selectedDateEl.value;
+        var isMonthEmpty = !selectedMonthEl.value;
+        var isYearEmpty = !selectedYearEl.value;
+        var firstInvalidField = null;
+
+        clearAllValidation();
+
+        if (type === 'day' && isDateEmpty) {
+          invalidateField(selectedDateEl, dayFeedbackEl, 'Vui lòng chọn ngày để lọc doanh thu.');
+          firstInvalidField = selectedDateEl;
+        }
+
+        if (type === 'month' && isMonthEmpty) {
+          invalidateField(selectedMonthEl, monthFeedbackEl, 'Vui lòng chọn tháng để lọc doanh thu.');
+          if (!firstInvalidField) {
+            firstInvalidField = selectedMonthEl;
+          }
+        }
+
+        if (requiresYear && isYearEmpty) {
+          invalidateField(selectedYearEl, yearFeedbackEl, 'Vui lòng chọn năm để lọc doanh thu.');
+          if (!firstInvalidField) {
+            firstInvalidField = selectedYearEl;
+          }
+        }
+
+        if (firstInvalidField) {
+          firstInvalidField.focus();
+          event.preventDefault();
+          return;
+        }
+      });
+
+      filterTypeEl.addEventListener('change', updateFilterInputs);
+      updateFilterInputs();
+    });
+  </script>
+}

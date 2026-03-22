@@ -1,0 +1,95 @@
+﻿@model WebCoffeeApplication.Models.TaiKhoan
+
+@{
+  ViewData["Title"] = "Chi tiết tài khoản";
+  var currentUserIdRaw = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+  int.TryParse(currentUserIdRaw, out var currentUserId);
+  var isSelfView = Model.Id == currentUserId;
+  var lastChuQuanId = ViewBag.LastChuQuanId as int?;
+  var isLastChuQuan = lastChuQuanId.HasValue && lastChuQuanId.Value == Model.Id;
+}
+
+<h1>Chi tiết tài khoản</h1>
+
+<div>
+  <!-- Khối hiển thị thông tin chi tiết của tài khoản -->
+  <hr />
+  <dl class="row">
+    <dt class="col-sm-3">Họ và tên</dt>
+    <dd class="col-sm-9">@Model.HoTen</dd>
+
+    <dt class="col-sm-3">Vai trò</dt>
+    <dd class="col-sm-9">
+      @if (Model.VaiTro == 1)
+      {
+        <span class="badge bg-danger">Chủ quán</span>
+      }
+      else
+      {
+        <span class="badge bg-info text-dark">Nhân viên</span>
+      }
+    </dd>
+
+    <dt class="col-sm-3">Số điện thoại</dt>
+    <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.SDT) ? "-" : Model.SDT)</dd>
+
+    <dt class="col-sm-3">Tên đăng nhập</dt>
+    <dd class="col-sm-9">@Model.UserName</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Ngày tạo</dt>
+    <dd class="col-sm-9">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Cập nhật lần cuối</dt>
+    <dd class="col-sm-9">@Model.NgayCapNhat.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Trạng thái</dt>
+    <dd class="col-sm-9">
+      @if (Model.TrangThaiXoa == 1)
+      {
+        <i class="bi bi-x-circle-fill text-danger" title="Đã xóa"></i> <span>Đã xóa</span>
+      }
+      else
+      {
+        <i class="bi bi-check-circle-fill text-success" title="Đang hoạt động"></i> <span>Đang hoạt động</span>
+      }
+    </dd>
+  </dl>
+</div>
+<div>
+  <!-- Nhóm nút thao tác nhanh -->
+  <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Sửa</a>
+  @if (Model.TrangThaiXoa != 1 && !isSelfView && !isLastChuQuan)
+  {
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
+  }
+  <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</div>
+
+@if (Model.TrangThaiXoa != 1 && !isSelfView && !isLastChuQuan)
+{
+  <!-- Modal xác nhận xóa tài khoản -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn xóa tài khoản <strong>@Model.HoTen</strong> không?</p>
+          <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Xóa</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

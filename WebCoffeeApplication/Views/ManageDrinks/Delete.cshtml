@@ -1,0 +1,60 @@
+@model DoUong
+
+@{
+  ViewData["Title"] = "Xóa đồ uống";
+}
+
+<h1>Xóa đồ uống</h1>
+
+<h3>Bạn có chắc chắn muốn xóa đồ uống này?</h3>
+
+<div>
+  <hr />
+  <dl class="row">
+    <dt class="col-sm-3">Tên đồ uống</dt>
+    <dd class="col-sm-9">@Model.TenDoUong</dd>
+
+    <dt class="col-sm-3">Danh mục</dt>
+    <dd class="col-sm-9">@Model.DanhMucDoUong?.TenDanhMuc</dd>
+
+    <dt class="col-sm-3">Trạng thái</dt>
+    <dd class="col-sm-9">
+      @if (Model.TrangThai == 1)
+      {
+        <span class="badge bg-success">Đang bán</span>
+      }
+      else
+      {
+        <span class="badge bg-secondary">Ngừng bán</span>
+      }
+    </dd>
+  </dl>
+
+  <div class="form-group">
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+  </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn xóa đồ uống <strong>@Model.TenDoUong</strong> không?</p>
+        <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <form asp-action="Delete" method="post" style="display:inline;">
+          <input type="hidden" asp-for="MaDoUong" />
+          <button type="submit" class="btn btn-danger">Xóa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

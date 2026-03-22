@@ -1,0 +1,178 @@
+@model HoaDon
+
+@{
+  ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<h1>Chi tiết hóa đơn #@Model.MaHoaDon</h1>
+
+<!-- Bước 1: Hiển thị thông tin tổng quan của hóa đơn. -->
+<div>
+  <hr />
+  <dl class="row">
+    <dt class="col-sm-3">Mã hóa đơn</dt>
+    <dd class="col-sm-9">@Model.MaHoaDon</dd>
+
+    <dt class="col-sm-3">Ngày tạo</dt>
+    <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-3">Số bàn</dt>
+    <dd class="col-sm-9">@Model.SoBan</dd>
+
+    <dt class="col-sm-3">Nhân viên</dt>
+    <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
+
+    <dt class="col-sm-3">Trạng thái</dt>
+    <dd class="col-sm-9">
+      @* Bước 1.1: Hiển thị nhãn trạng thái theo enum trạng thái hóa đơn. *@
+      @switch (Model.TrangThai)
+      {
+        case TrangThaiHoaDon.DangXuLy:
+          <span class="badge bg-warning text-dark">Đang xử lý</span>
+          break;
+        case TrangThaiHoaDon.DaLenMon:
+          <span class="badge bg-info text-dark">Đã lên món</span>
+          break;
+        case TrangThaiHoaDon.DaThanhToan:
+          <span class="badge bg-success">Đã thanh toán</span>
+          break;
+        case TrangThaiHoaDon.HuyDonHang:
+          <span class="badge bg-danger">Hủy đơn hàng</span>
+          break;
+        default:
+          <span class="badge bg-secondary">Không xác định</span>
+          break;
+      }
+    </dd>
+
+    <dt class="col-sm-3">Tổng tiền</dt>
+    <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
+  </dl>
+
+  <!-- Bước 2: Hiển thị bảng chi tiết món nếu hóa đơn có dữ liệu chi tiết. -->
+  <h4 class="mt-4">Chi tiết đồ uống</h4>
+  @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
+  {
+    <style>
+      #detailItemsTable {
+        width: 100%;
+        table-layout: fixed;
+      }
+
+      #detailItemsTable thead,
+      #detailItemsTable tfoot {
+        display: table;
+        width: calc(100% - var(--detail-scrollbar-width, 0px));
+        table-layout: fixed;
+      }
+
+      #detailItemsBody {
+        display: block;
+        max-height: 110px;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+      }
+
+      #detailItemsBody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+    </style>
+    <table class="table table-bordered" id="detailItemsTable">
+      @* Bước 2.1: Header định nghĩa các cột hiển thị chi tiết món. *@
+      <thead>
+        <tr>
+          <th style="width: 10%;">#</th>
+          <th style="width: 25%;">Đồ uống</th>
+          <th style="width: 10%;">Kích cỡ</th>
+          <th style="width: 15%;">Đơn giá</th>
+          <th style="width: 10%;">Số lượng</th>
+          <th style="width: 15%;">Thành tiền</th>
+          <th style="width: 15%;">Ghi chú</th>
+        </tr>
+      </thead>
+
+      @* Bước 2.2: Body hiển thị từng dòng chi tiết món trong hóa đơn. *@
+      <tbody id="detailItemsBody">
+        @{
+          int stt = 1;
+        }
+        @foreach (var ct in Model.ChiTietHoaDons)
+        {
+          <tr>
+            <td style="width: 10%;">@stt</td>
+            <td style="width: 25%;">@ct.DoUong?.TenDoUong</td>
+            <td style="width: 10%;">
+              @{
+                var size = ct.DoUong?.ChiTietDoUongs
+                    ?.FirstOrDefault(d => d.GiaBan == ct.DonGia)
+                    ?.KichCo;
+              }
+              @size
+            </td>
+            <td style="width: 15%;">@ct.DonGia?.ToString("N0")đ</td>
+            <td style="width: 10%;">@ct.SoLuong</td>
+            <td style="width: 15%;">@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
+            <td style="width: 15%;">@ct.GhiChu</td>
+          </tr>
+          stt++;
+        }
+      </tbody>
+
+      @* Bước 2.3: Footer hiển thị tổng tiền toàn hóa đơn. *@
+      <tfoot>
+        <tr>
+          <td colspan="5" style="width: 70%;" class="text-end"><strong>Tổng cộng:</strong></td>
+          <td style="width: 15%;"><strong>@Model.TongTien?.ToString("N0")đ</strong></td>
+          <td style="width: 15%;"></td>
+        </tr>
+      </tfoot>
+    </table>
+  }
+  else
+  {
+    @* Bước 2.4: Trường hợp hóa đơn chưa có chi tiết món. *@
+    <p class="text-muted">Chưa có chi tiết đồ uống.</p>
+  }
+
+  <!-- Bước 3: Nhóm nút thao tác điều hướng. -->
+  <div class="mt-3">
+    @* Bước 3.1: Chỉ cho phép sửa khi hóa đơn chưa ở trạng thái Đã thanh toán. *@
+    @if (Model.TrangThai != TrangThaiHoaDon.DaThanhToan)
+    {
+      <a asp-action="Edit" asp-route-id="@Model.MaHoaDon" class="btn btn-warning">Sửa</a>
+    }
+    @* Bước 3.2: Chỉ hiển thị nút Thanh toán khi hóa đơn chưa thanh toán và chưa hủy. *@
+    @if (Model.TrangThai != TrangThaiHoaDon.DaThanhToan && Model.TrangThai != TrangThaiHoaDon.HuyDonHang)
+    {
+      <a asp-action="Payment" asp-route-id="@Model.MaHoaDon" class="btn btn-success">Thanh toán</a>
+    }
+    @* Bước 3.3: Điều hướng về danh sách hóa đơn. *@
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+  </div>
+</div>
+
+@section Scripts {
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Bước 1: Đồng bộ độ rộng header/footer với phần body khi bảng xuất hiện scrollbar.
+      function syncDetailTableWidth() {
+        var body = document.getElementById('detailItemsBody');
+        var table = document.getElementById('detailItemsTable');
+        if (!body || !table) {
+          return;
+        }
+
+        var scrollbarWidth = body.offsetWidth - body.clientWidth;
+        table.style.setProperty('--detail-scrollbar-width', scrollbarWidth + 'px');
+      }
+
+      // Bước 2: Cập nhật lại khi thay đổi kích thước cửa sổ.
+      window.addEventListener('resize', syncDetailTableWidth);
+
+      // Bước 3: Đồng bộ ngay khi trang vừa tải.
+      syncDetailTableWidth();
+    });
+  </script>
+}

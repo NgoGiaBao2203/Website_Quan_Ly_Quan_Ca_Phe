@@ -1,0 +1,106 @@
+﻿@model WebCoffeeApplication.Models.TaiKhoanEditViewModel
+
+@{
+    ViewData["Title"] = "Cập nhật tài khoản";
+    var currentUserIdRaw = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(currentUserIdRaw, out var currentUserId);
+    var isSelfEdit = Model.Id == currentUserId;
+    var canDemoteToNhanVien = ViewBag.CanDemoteToNhanVien as bool? ?? true;
+    var canEditTrangThaiXoa = ViewBag.CanEditTrangThaiXoa as bool? ?? false;
+}
+
+<h1>Cập nhật tài khoản</h1>
+
+<!-- Toast cảnh báo dùng chung cho form tài khoản -->
+@await Html.PartialAsync("_FormWarningToast")
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <!-- Form cập nhật thông tin tài khoản -->
+        <form asp-action="Edit" method="post" data-tai-khoan-form="true" data-require-password="false">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <!-- Chú thích các trường bắt buộc -->
+            <p class="text-muted"><small>Các trường có dấu <span class="text-danger">*</span> là bắt buộc.</small></p>
+            @if (!canDemoteToNhanVien)
+            {
+                <div class="alert alert-warning">
+                    Không thể hạ quyền tài khoản này xuống Nhân viên vì có thể làm mất quyền quản trị hệ thống.
+                </div>
+            }
+            <div class="form-group mb-3">
+                <label asp-for="HoTen" class="control-label">Họ và tên <span class="text-danger">*</span></label>
+                <input asp-for="HoTen" class="form-control" required />
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="VaiTro" class="control-label">Vai trò <span class="text-danger">*</span></label>
+                @{
+                    var selectedRole = Model.VaiTro == 1 ? 1 : 2;
+                }
+                <select asp-for="VaiTro" class="form-control" required>
+                    <option value="1" selected="@(selectedRole == 1 ? "selected" : null)">Chủ quán</option>
+                    @if (canDemoteToNhanVien)
+                    {
+                        <option value="2" selected="@(selectedRole == 2 ? "selected" : null)">Nhân viên</option>
+                    }
+                </select>
+                <span asp-validation-for="VaiTro" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SDT" class="control-label">Số điện thoại <span class="text-danger">*</span></label>
+                <input asp-for="SDT" class="form-control" placeholder="VD: 0912345678" required />
+                <span asp-validation-for="SDT" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="UserName" class="control-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                <input asp-for="UserName" class="form-control" required />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label">Email <span class="text-danger">*</span></label>
+                <input asp-for="Email" class="form-control" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="TrangThaiXoa" class="control-label">Trạng thái</label>
+                @if (canEditTrangThaiXoa)
+                {
+                    <select asp-for="TrangThaiXoa" class="form-control">
+                        <option value="0" selected="@(Model.TrangThaiXoa == 0 ? "selected" : null)">Đang hoạt động</option>
+                        <option value="1" selected="@(Model.TrangThaiXoa == 1 ? "selected" : null)">Đã xóa</option>
+                    </select>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="TrangThaiXoa" />
+                    <div class="form-control bg-light" style="pointer-events: none;">
+                        @if (Model.TrangThaiXoa == 0)
+                        {
+                            <i class="bi bi-check-circle-fill text-success"></i> <span>Đang hoạt động</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-x-circle-fill text-danger"></i> <span>Đã xóa</span>
+                        }
+                    </div>
+                }
+                <span asp-validation-for="TrangThaiXoa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Nạp jQuery validation mặc định của ASP.NET Core.
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <!-- Script validate/toast dùng chung cho Create/Edit tài khoản -->
+    <script src="~/js/tai-khoan-form.js" asp-append-version="true"></script>
+}

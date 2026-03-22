@@ -1,0 +1,223 @@
+@model DoUong
+
+@{
+  ViewData["Title"] = "Thêm đồ uống mới";
+}
+
+<h1>Thêm đồ uống mới</h1>
+
+<!-- Toast cảnh báo -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+  <div id="warningToast" class="toast align-items-center text-light bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+    </div>
+  </div>
+</div>
+
+<hr />
+<div class="row">
+  <div class="col-md-6">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      <div class="form-group mb-3">
+        <label asp-for="TenDoUong" class="control-label">Tên đồ uống</label>
+        <input asp-for="TenDoUong" class="form-control" />
+        <span asp-validation-for="TenDoUong" class="text-danger"></span>
+      </div>
+      <div class="form-group mb-3">
+        <label class="control-label">Hình ảnh</label>
+        <input type="file" name="imageFile" id="imageFile" accept="image/*" class="form-control" />
+        <span class="text-danger" id="imageFileError"></span>
+      </div>
+      <div class="form-group mb-3">
+        <label asp-for="MaDanhMucDoUong" class="control-label">Danh mục đồ uống</label>
+        <select asp-for="MaDanhMucDoUong" asp-items="@ViewBag.DanhMucList" class="form-control">
+          <option value="">-- Chọn danh mục --</option>
+        </select>
+        <span asp-validation-for="MaDanhMucDoUong" class="text-danger"></span>
+      </div>
+      <div class="form-group mb-3">
+        <label for="kichCo" class="control-label">Kích cỡ</label>
+        @{
+          var selectedSize = ViewBag.KichCo?.ToString();
+        }
+        <select id="kichCo" name="kichCo" class="form-control">
+          <option value="">-- Chọn kích cỡ --</option>
+          <option value="S" selected="@(selectedSize == "S" ? "selected" : null)">S</option>
+          <option value="M" selected="@(selectedSize == "M" ? "selected" : null)">M</option>
+          <option value="L" selected="@(selectedSize == "L" ? "selected" : null)">L</option>
+        </select>
+        @Html.ValidationMessage("kichCo", new { @class = "text-danger" })
+      </div>
+      <div class="form-group mb-3">
+        <label for="giaBanDisplay" class="control-label">Giá bán</label>
+        <div class="input-group">
+          <input id="giaBanDisplay" type="text" class="form-control" placeholder="VD: 25.000" />
+          <span class="input-group-text">đ</span>
+        </div>
+        <input id="giaBan" name="giaBan" type="hidden" value="@ViewBag.GiaBan" />
+        @Html.ValidationMessage("giaBan", new { @class = "text-danger" })
+      </div>
+      <div class="form-group mb-3">
+        <label asp-for="TrangThai" class="control-label">Trạng thái</label>
+        <select asp-for="TrangThai" class="form-control">
+          <option value="1">Đang bán</option>
+          <option value="0">Ngừng bán</option>
+        </select>
+        <span asp-validation-for="TrangThai" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <input type="submit" value="Thêm" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-5 offset-md-1 d-flex align-items-start justify-content-center">
+    <div class="text-center p-3 border rounded bg-light" style="min-height: 300px; width: 100%; display: flex; align-items: center; justify-content: center;">
+      <img id="imagePreview" src="#" alt="Xem trước" style="max-width: 100%; max-height: 300px; object-fit: contain; display: none;" class="rounded" />
+      <p id="imagePlaceholder" class="text-muted mb-0">Xem trước hình ảnh</p>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var displayInput = document.getElementById('giaBanDisplay');
+        var hiddenInput = document.getElementById('giaBan');
+        var form = displayInput.closest('form');
+
+        function formatVND(value) {
+            var num = parseInt(value);
+            if (isNaN(num) || num === 0) return '';
+            return num.toLocaleString('vi-VN');
+        }
+
+        function showWarningToast(messages) {
+            var toastBody = document.getElementById('toastMessage');
+            if (Array.isArray(messages)) {
+                toastBody.innerHTML = '';
+                var ul = document.createElement('ul');
+                ul.className = 'mb-0 ps-3';
+                messages.forEach(function (msg) {
+                    var li = document.createElement('li');
+                    li.textContent = msg;
+                    ul.appendChild(li);
+                });
+                toastBody.appendChild(ul);
+            } else {
+                toastBody.textContent = messages;
+            }
+            var toastEl = document.getElementById('warningToast');
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+
+        // Xem trước hình ảnh khi chọn file
+        var imageFileInput = document.getElementById('imageFile');
+        var imagePreview = document.getElementById('imagePreview');
+        var imagePlaceholder = document.getElementById('imagePlaceholder');
+        imageFileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    imagePlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                imagePreview.style.display = 'none';
+                imagePlaceholder.style.display = 'block';
+            }
+        });
+
+        // Định dạng khi tải trang
+        if (hiddenInput.value) {
+            displayInput.value = formatVND(hiddenInput.value);
+        }
+
+        // Định dạng khi nhập giá
+        displayInput.addEventListener('input', function () {
+            var beforeClean = this.value.replace(/\./g, '');
+            var raw = beforeClean.replace(/[^0-9]/g, '');
+
+            if (beforeClean !== raw) {
+                showWarningToast('Giá bán chỉ được nhập số.');
+            }
+
+            hiddenInput.value = raw;
+
+            if (raw) {
+                var cursorPos = this.selectionStart;
+                var oldLen = this.value.length;
+                this.value = formatVND(raw);
+                var newLen = this.value.length;
+                var newCursor = Math.max(0, cursorPos + (newLen - oldLen));
+                this.setSelectionRange(newCursor, newCursor);
+            }
+        });
+
+        // Kiểm tra tất cả trường khi gửi form
+        form.addEventListener('submit', function (e) {
+            var errors = [];
+
+            var tenDoUong = document.getElementById('TenDoUong');
+            if (!tenDoUong.value || tenDoUong.value.trim() === '') {
+                errors.push('Vui lòng nhập tên đồ uống.');
+            } else if (tenDoUong.value.trim().length > 100) {
+                errors.push('Tên đồ uống không được vượt quá 100 ký tự.');
+            }
+
+            var imageInput = document.getElementById('imageFile');
+            if (!imageInput.files || imageInput.files.length === 0) {
+                errors.push('Vui lòng chọn hình ảnh.');
+            } else {
+                var file = imageInput.files[0];
+                var allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    errors.push('Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP).');
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    errors.push('Kích thước file không được vượt quá 5MB.');
+                }
+            }
+
+            var danhMuc = document.getElementById('MaDanhMucDoUong');
+            if (!danhMuc.value || danhMuc.value === '') {
+                errors.push('Vui lòng chọn danh mục đồ uống.');
+            }
+
+            var kichCo = document.getElementById('kichCo');
+            if (!kichCo.value || kichCo.value === '') {
+                errors.push('Vui lòng chọn kích cỡ.');
+            }
+
+            var raw = hiddenInput.value;
+            if (!raw || raw.trim() === '') {
+                errors.push('Vui lòng nhập giá bán.');
+            } else {
+                var price = parseInt(raw);
+                if (isNaN(price)) {
+                    errors.push('Giá bán không hợp lệ.');
+                } else if (price < 1000) {
+                    errors.push('Giá bán phải từ 1.000đ trở lên.');
+                } else {
+                    hiddenInput.value = price.toString();
+                }
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                showWarningToast(errors);
+                return false;
+            }
+        });
+    });
+  </script>
+}

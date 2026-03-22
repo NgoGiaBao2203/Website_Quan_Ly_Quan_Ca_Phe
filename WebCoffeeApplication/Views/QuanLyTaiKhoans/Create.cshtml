@@ -1,0 +1,73 @@
+﻿@model WebCoffeeApplication.Models.TaiKhoanCreateViewModel
+
+@{
+    ViewData["Title"] = "Thêm tài khoản";
+}
+
+<h1>Thêm tài khoản</h1>
+
+<!-- Toast cảnh báo dùng chung cho form tài khoản -->
+@await Html.PartialAsync("_FormWarningToast")
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <!-- Form tạo mới tài khoản -->
+        <form asp-action="Create" method="post" data-tai-khoan-form="true" data-require-password="true">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- Chú thích các trường bắt buộc -->
+            <p class="text-muted"><small>Các trường có dấu <span class="text-danger">*</span> là bắt buộc.</small></p>
+            <div class="form-group mb-3">
+                <label asp-for="HoTen" class="control-label">Họ và tên <span class="text-danger">*</span></label>
+                <input asp-for="HoTen" class="form-control" required />
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="VaiTro" class="control-label">Vai trò <span class="text-danger">*</span></label>
+                <select asp-for="VaiTro" class="form-control" required>
+                    <option value="1">Chủ quán</option>
+                    <option value="2">Nhân viên</option>
+                </select>
+                <span asp-validation-for="VaiTro" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="SDT" class="control-label">Số điện thoại <span class="text-danger">*</span></label>
+                <input asp-for="SDT" class="form-control" placeholder="VD: 0912345678" required />
+                <span asp-validation-for="SDT" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="UserName" class="control-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                <input asp-for="UserName" class="form-control" required />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label">Email <span class="text-danger">*</span></label>
+                <input asp-for="Email" class="form-control" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="control-label">Mật khẩu <span class="text-danger">*</span></label>
+                <input asp-for="Password" class="form-control" required />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ConfirmPassword" class="control-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                <input asp-for="ConfirmPassword" class="form-control" required />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Thêm" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Nạp jQuery validation mặc định của ASP.NET Core.
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <!-- Script validate/toast dùng chung cho Create/Edit tài khoản -->
+    <script src="~/js/tai-khoan-form.js" asp-append-version="true"></script>
+}

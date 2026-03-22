@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - E-Coffee Application</title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/WebCoffeeApplication.styles.css" asp-append-version="true" />
+</head>
+<body>
+  @{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var isLoginPage = string.Equals(controller, "Account", StringComparison.OrdinalIgnoreCase)
+                      && string.Equals(action, "Login", StringComparison.OrdinalIgnoreCase);
+    var toastMessage = TempData["ToastMessage"]?.ToString();
+    var toastType = TempData["ToastType"]?.ToString() ?? "info";
+  }
+
+  @if (!string.IsNullOrEmpty(toastMessage))
+  {
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+      <div id="notificationToast" class="toast align-items-center text-white bg-@toastType border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+        <div class="d-flex">
+          <div class="toast-body">
+            @toastMessage
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isLoginPage)
+  {
+    <div class="container">
+      <main role="main" class="pb-3">
+        @RenderBody()
+      </main>
+    </div>
+  }
+  else
+  {
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="sidebar-brand">E-Coffee Application</a>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-item @(string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase) && string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+          <a asp-area="" asp-controller="Home" asp-action="Index" class="sidebar-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+              <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z" />
+            </svg>
+            Trang chủ
+          </a>
+        </li>
+        <li class="sidebar-item @(string.Equals(controller, "ManageCategory", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+          <a asp-area="" asp-controller="ManageCategory" asp-action="Index" class="sidebar-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+              <path d="M3 2v4.586l7 7L14.586 9l-7-7zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586z" />
+              <path d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1m0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
+            </svg>
+            Danh mục đồ uống
+          </a>
+        </li>
+        <li class="sidebar-item @(string.Equals(controller, "ManageDrinks", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+          <a asp-area="" asp-controller="ManageDrinks" asp-action="Index" class="sidebar-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+              <path d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+            </svg>
+            Quản lý đồ uống
+          </a>
+        </li>
+        @if (User.IsInRole("ChuQuan"))
+        {
+          <li class="sidebar-item @(string.Equals(controller, "QuanLyTaiKhoans", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+            <a asp-area="" asp-controller="QuanLyTaiKhoans" asp-action="Index" class="sidebar-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 8a5 5 0 1 1 10 0z" />
+              </svg>
+              Quản lý tài khoản
+            </a>
+          </li>
+        }
+        <li class="sidebar-item @(string.Equals(controller, "ManageOrder", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+          <a asp-area="" asp-controller="ManageOrder" asp-action="Index" class="sidebar-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+              <path d="M2.5 3.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9z" />
+              <path d="M3.5 2a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v1h-9z" />
+              <path d="M5 6h6v1H5zm0 3h6v1H5z" />
+            </svg>
+            Quản lý đơn hàng
+          </a>
+        </li>
+        @if (User.IsInRole("ChuQuan"))
+        {
+          <li class="sidebar-item @(string.Equals(controller, "ManageRevenue", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+            <a asp-area="" asp-controller="ManageRevenue" asp-action="Index" class="sidebar-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                <path d="M4 10a1 1 0 0 1 1-1h1V6a1 1 0 0 1 1-1h1V3a1 1 0 0 1 2 0v2h1a1 1 0 0 1 1 1v3h1a1 1 0 0 1 1 1v3H4z" />
+                <path d="M0 14a2 2 0 0 1 2-2h12v2z" />
+              </svg>
+              Quản lý doanh thu
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Sidebar overlay for mobile -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Main content wrapper -->
+    <div class="main-content">
+      <!-- Top bar for mobile toggle -->
+      <nav class="topbar d-md-none">
+        <button id="sidebarToggle" class="btn btn-outline-dark" type="button" aria-label="Toggle sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+          </svg>
+        </button>
+        <span class="topbar-brand">WebCoffeeApplication</span>
+      </nav>
+
+      <div class="content-area">
+        <main role="main" class="pb-3">
+          @RenderBody()
+        </main>
+      </div>
+
+      <footer class="app-footer">
+        <div class="app-footer__top">
+          <div>
+            <h6 class="mb-1">E-Coffee Application</h6>
+            <p class="mb-0">Nền tảng quản lý đơn hàng và doanh thu cho quán cà phê.</p>
+          </div>
+          <div class="app-footer__links">
+            <a asp-controller="ManageOrder" asp-action="Index">Đơn hàng</a>
+            @if (User.IsInRole("ChuQuan"))
+            {
+              <a asp-controller="ManageRevenue" asp-action="Index">Doanh thu</a>
+            }
+          </div>
+        </div>
+        <div class="app-footer__bottom">
+          <span>&copy; @DateTime.Now.Year E-Coffee Application</span>
+          <span>Powered by ASP.NET Core</span>
+        </div>
+      </footer>
+    </div>
+  }
+
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="~/js/site.js" asp-append-version="true"></script>
+  @if (!string.IsNullOrEmpty(toastMessage))
+  {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var toastEl = document.getElementById('notificationToast');
+          if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+          }
+        });
+    </script>
+  }
+  @if (!isLoginPage)
+  {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var sidebar = document.getElementById('sidebar');
+          var overlay = document.getElementById('sidebarOverlay');
+          var toggle = document.getElementById('sidebarToggle');
+
+          if (toggle) {
+            toggle.addEventListener('click', function () {
+              sidebar.classList.toggle('open');
+              overlay.classList.toggle('open');
+            });
+          }
+
+          if (overlay) {
+            overlay.addEventListener('click', function () {
+              sidebar.classList.remove('open');
+              overlay.classList.remove('open');
+            });
+          }
+        });
+    </script>
+  }
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

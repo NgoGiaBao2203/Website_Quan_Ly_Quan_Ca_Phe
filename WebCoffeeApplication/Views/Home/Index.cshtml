@@ -1,0 +1,81 @@
+﻿@{
+        ViewData["Title"] = "Trang chủ";
+        var currentUserFullName = ViewData["CurrentUserFullName"]?.ToString() ?? User.Identity?.Name ?? "Người dùng";
+        var currentUserUserName = ViewData["CurrentUserUserName"]?.ToString() ?? User.Identity?.Name ?? "-";
+        var currentUserEmail = ViewData["CurrentUserEmail"]?.ToString() ?? "-";
+        var currentUserPhone = ViewData["CurrentUserPhone"]?.ToString() ?? "-";
+}
+
+<section class="home-hero mb-4">
+    <div class="home-hero__content">
+        <p class="home-kicker">E-Coffee Application</p>
+        <h1 class="home-title">Chào mừng, @currentUserFullName</h1>
+        <p class="home-subtitle">
+            Bạn đang ở màn hình tổng quan vận hành quán. Tại đây bạn có thể truy cập nhanh các khu vực chính
+            để quản lý đơn hàng, sản phẩm và theo dõi doanh thu trong ngày.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <a asp-controller="ManageOrder" asp-action="Index" class="btn btn-dark">Đi đến đơn hàng</a>
+            <a asp-controller="ManageRevenue" asp-action="Index" class="btn btn-outline-dark">Xem doanh thu</a>
+    </div>
+    </div>
+</section>
+
+<section class="user-overview mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div class="user-overview__header mb-0">Thông tin tài khoản đăng nhập</div>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
+        </form>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-3 col-6">
+            <div class="user-overview__item">
+                <span>Họ tên</span>
+                <strong>@currentUserFullName</strong>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="user-overview__item">
+                <span>Tài khoản</span>
+                <strong>@currentUserUserName</strong>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="user-overview__item">
+                <span>Email</span>
+                <strong>@currentUserEmail</strong>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="user-overview__item">
+                <span>Số điện thoại</span>
+                <strong>@currentUserPhone</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="home-card">
+            <h3>Đơn hàng trong ngày</h3>
+            <p>Tạo mới, chỉnh sửa và theo dõi tiến độ phục vụ theo từng bàn.</p>
+            <a asp-controller="ManageOrder" asp-action="Index" class="home-link">Mở quản lý đơn hàng</a>
+    </div>
+    </div>
+    <div class="col-md-4">
+        <div class="home-card">
+            <h3>Doanh thu bán hàng</h3>
+            <p>Xem danh sách hóa đơn đã thanh toán và tra cứu theo mốc thời gian.</p>
+            <a asp-controller="ManageRevenue" asp-action="Index" class="home-link">Mở quản lý doanh thu</a>
+    </div>
+    </div>
+    <div class="col-md-4">
+        <div class="home-card">
+            <h3>Thực đơn & danh mục</h3>
+            <p>Cập nhật danh mục đồ uống, kích cỡ và giá bán theo thời điểm.</p>
+            <a asp-controller="ManageDrinks" asp-action="Index" class="home-link">Mở quản lý đồ uống</a>
+    </div>
+    </div>
+</section>
