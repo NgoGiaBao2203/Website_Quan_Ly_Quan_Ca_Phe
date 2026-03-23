@@ -1,100 +1,100 @@
 @model DanhMucDoUong
 
 @{
-  ViewData["Title"] = "Cập nhật danh mục đồ uống";
-  var isChuQuan = ViewBag.IsChuQuan as bool? ?? false;
+    ViewData["Title"] = "Cập nhật danh mục đồ uống";
+    var isChuQuan = ViewBag.IsChuQuan as bool? ?? false;
 }
 
 <h1>Cập nhật danh mục đồ uống</h1>
 
 <!-- Toast cảnh báo -->
 <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
-  <div id="warningToast" class="toast align-items-center text-light bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+    <div id="warningToast" class="toast align-items-center text-light bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+        </div>
     </div>
-  </div>
 </div>
 
 <hr />
 <div class="row">
-  <div class="col-md-4">
-    <form asp-action="Edit" method="post">
-      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-      <input type="hidden" asp-for="MaDanhMucDoUong" />
-      <div class="form-group mb-3">
-        <label asp-for="TenDanhMuc" class="control-label">Tên danh mục</label>
-        <input asp-for="TenDanhMuc" class="form-control" />
-        <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
-      </div>
-      @if (isChuQuan)
-      {
-        <div class="form-group mb-3">
-          <label asp-for="TrangThaiXoa" class="control-label">Tạm xóa</label>
-          <select asp-for="TrangThaiXoa" class="form-control">
-            <option value="0" selected="@(Model.TrangThaiXoa == 0 ? "selected" : null)">Đang hoạt động</option>
-            <option value="1" selected="@(Model.TrangThaiXoa == 1 ? "selected" : null)">Đã xóa</option>
-          </select>
-          <span asp-validation-for="TrangThaiXoa" class="text-danger"></span>
-        </div>
-      }
-      else
-      {
-        <input type="hidden" asp-for="TrangThaiXoa" />
-      }
-      <div class="form-group">
-        <input type="submit" value="Lưu" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-      </div>
-    </form>
-  </div>
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaDanhMucDoUong" />
+            <div class="form-group mb-3">
+                <label asp-for="TenDanhMuc" class="control-label">Tên danh mục</label>
+                <input asp-for="TenDanhMuc" class="form-control" />
+                <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
+            </div>
+            @if (isChuQuan)
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="TrangThaiXoa" class="control-label">Tạm xóa</label>
+                    <select asp-for="TrangThaiXoa" class="form-control">
+                        <option value="0" selected="@(Model.TrangThaiXoa == 0 ? "selected" : null)">Đang hoạt động</option>
+                        <option value="1" selected="@(Model.TrangThaiXoa == 1 ? "selected" : null)">Đã xóa</option>
+                    </select>
+                    <span asp-validation-for="TrangThaiXoa" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="TrangThaiXoa" />
+            }
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
-  @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-  }
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var form = document.querySelector('form');
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var form = document.querySelector('form');
 
-      function showWarningToast(messages) {
-        var toastBody = document.getElementById('toastMessage');
-        if (Array.isArray(messages)) {
-          toastBody.innerHTML = '';
-          var ul = document.createElement('ul');
-          ul.className = 'mb-0 ps-3';
-          messages.forEach(function (msg) {
-            var li = document.createElement('li');
-            li.textContent = msg;
-            ul.appendChild(li);
+          function showWarningToast(messages) {
+            var toastBody = document.getElementById('toastMessage');
+            if (Array.isArray(messages)) {
+              toastBody.innerHTML = '';
+              var ul = document.createElement('ul');
+              ul.className = 'mb-0 ps-3';
+              messages.forEach(function (msg) {
+                var li = document.createElement('li');
+                li.textContent = msg;
+                ul.appendChild(li);
+              });
+              toastBody.appendChild(ul);
+            } else {
+              toastBody.textContent = messages;
+            }
+            var toastEl = document.getElementById('warningToast');
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+          }
+
+          form.addEventListener('submit', function (e) {
+            var errors = [];
+            var tenDanhMuc = document.getElementById('TenDanhMuc');
+
+            if (!tenDanhMuc.value || tenDanhMuc.value.trim() === '') {
+              errors.push('Vui lòng nhập tên danh mục.');
+            } else if (tenDanhMuc.value.trim().length > 100) {
+              errors.push('Tên danh mục không được vượt quá 100 ký tự.');
+            }
+
+            if (errors.length > 0) {
+              e.preventDefault();
+              showWarningToast(errors);
+              return false;
+            }
           });
-          toastBody.appendChild(ul);
-        } else {
-          toastBody.textContent = messages;
-        }
-        var toastEl = document.getElementById('warningToast');
-        var toast = new bootstrap.Toast(toastEl);
-        toast.show();
-      }
-
-      form.addEventListener('submit', function (e) {
-        var errors = [];
-        var tenDanhMuc = document.getElementById('TenDanhMuc');
-
-        if (!tenDanhMuc.value || tenDanhMuc.value.trim() === '') {
-          errors.push('Vui lòng nhập tên danh mục.');
-        } else if (tenDanhMuc.value.trim().length > 100) {
-          errors.push('Tên danh mục không được vượt quá 100 ký tự.');
-        }
-
-        if (errors.length > 0) {
-          e.preventDefault();
-          showWarningToast(errors);
-          return false;
-        }
-      });
-    });
-  </script>
+        });
+    </script>
 }

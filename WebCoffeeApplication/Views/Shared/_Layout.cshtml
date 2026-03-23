@@ -46,7 +46,8 @@
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
       <div class="sidebar-header">
-        <a asp-area="" asp-controller="Home" asp-action="Index" class="sidebar-brand">E-Coffee Application</a>
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="sidebar-brand" style="color: #a67b5b;
+        font-weight: bold;">E-Coffee Application</a>
       </div>
       <ul class="sidebar-nav">
         <li class="sidebar-item @(string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase) && string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">

@@ -1,7 +1,7 @@
 @model HoaDon
 
 @{
-  ViewData["Title"] = "Xóa hóa đơn";
+    ViewData["Title"] = "Xóa hóa đơn";
 }
 
 <h1>Xóa hóa đơn</h1>
@@ -10,100 +10,100 @@
 
 <!-- Bước 1: Hiển thị thông tin tổng quan của hóa đơn cần xóa. -->
 <div>
-  <hr />
-  <dl class="row">
-    <dt class="col-sm-3">Mã hóa đơn</dt>
-    <dd class="col-sm-9">@Model.MaHoaDon</dd>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã hóa đơn</dt>
+        <dd class="col-sm-9">@Model.MaHoaDon</dd>
 
-    <dt class="col-sm-3">Ngày tạo</dt>
-    <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
+        <dt class="col-sm-3">Ngày tạo</dt>
+        <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
 
-    <dt class="col-sm-3">Số bàn</dt>
-    <dd class="col-sm-9">@Model.SoBan</dd>
+        <dt class="col-sm-3">Số bàn</dt>
+        <dd class="col-sm-9">@Model.SoBan</dd>
 
-    <dt class="col-sm-3">Nhân viên</dt>
-    <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
+        <dt class="col-sm-3">Nhân viên</dt>
+        <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
 
-    <dt class="col-sm-3">Tổng tiền</dt>
-    <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
+        <dt class="col-sm-3">Tổng tiền</dt>
+        <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
 
-    <dt class="col-sm-3">Trạng thái</dt>
-    <dd class="col-sm-9">
-      @* Bước 1.1: Hiển thị nhãn trạng thái theo enum trạng thái hóa đơn. *@
-      @switch (Model.TrangThai)
-      {
-        case TrangThaiHoaDon.DangXuLy:
-          <span class="badge bg-warning text-dark">Đang xử lý</span>
-          break;
-        case TrangThaiHoaDon.DaLenMon:
-          <span class="badge bg-info text-dark">Đã lên món</span>
-          break;
-        case TrangThaiHoaDon.DaThanhToan:
-          <span class="badge bg-success">Đã thanh toán</span>
-          break;
-        case TrangThaiHoaDon.HuyDonHang:
-          <span class="badge bg-danger">Hủy đơn hàng</span>
-          break;
-        default:
-          <span class="badge bg-secondary">Không xác định</span>
-          break;
-      }
-    </dd>
-  </dl>
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9">
+            @* Bước 1.1: Hiển thị nhãn trạng thái theo enum trạng thái hóa đơn. *@
+            @switch (Model.TrangThai)
+            {
+                case TrangThaiHoaDon.DangXuLy:
+                    <span class="badge bg-warning text-dark">Đang xử lý</span>
+                    break;
+                case TrangThaiHoaDon.DaLenMon:
+                    <span class="badge bg-info text-dark">Đã lên món</span>
+                    break;
+                case TrangThaiHoaDon.DaThanhToan:
+                    <span class="badge bg-success">Đã thanh toán</span>
+                    break;
+                case TrangThaiHoaDon.HuyDonHang:
+                    <span class="badge bg-danger">Hủy đơn hàng</span>
+                    break;
+                default:
+                    <span class="badge bg-secondary">Không xác định</span>
+                    break;
+            }
+        </dd>
+    </dl>
 
-  @* Bước 2: Nếu có chi tiết món thì hiển thị bảng chi tiết để người dùng xác nhận lần cuối. *@
-  @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
-  {
-    <h5>Chi tiết đồ uống:</h5>
-    <table class="table table-bordered" style="max-width: 600px;">
-      <thead>
-        <tr>
-          <th>Đồ uống</th>
-          <th>Đơn giá</th>
-          <th>Số lượng</th>
-          <th>Thành tiền</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var ct in Model.ChiTietHoaDons)
-        {
-          <tr>
-            <td>@ct.DoUong?.TenDoUong</td>
-            <td>@ct.DonGia?.ToString("N0")đ</td>
-            <td>@ct.SoLuong</td>
-            <td>@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  }
+    @* Bước 2: Nếu có chi tiết món thì hiển thị bảng chi tiết để người dùng xác nhận lần cuối. *@
+    @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
+    {
+        <h5>Chi tiết đồ uống:</h5>
+        <table class="table table-bordered" style="max-width: 600px;">
+            <thead>
+                <tr>
+                    <th>Đồ uống</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ct in Model.ChiTietHoaDons)
+                {
+                    <tr>
+                        <td>@ct.DoUong?.TenDoUong</td>
+                        <td>@ct.DonGia?.ToString("N0")đ</td>
+                        <td>@ct.SoLuong</td>
+                        <td>@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 
-  <!-- Bước 3: Nút mở modal xác nhận xóa hoặc quay lại danh sách. -->
-  <div class="form-group">
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-  </div>
+    <!-- Bước 3: Nút mở modal xác nhận xóa hoặc quay lại danh sách. -->
+    <div class="form-group">
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
 </div>
 
 <!-- Bước 4: Modal xác nhận cuối cùng trước khi gửi yêu cầu xóa. -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
-      </div>
-      <div class="modal-body">
-        <p>Bạn có chắc chắn muốn xóa <strong>Hóa đơn #@Model.MaHoaDon</strong> không?</p>
-        <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-        <form asp-action="Delete" method="post" style="display:inline;">
-          <input type="hidden" asp-for="MaHoaDon" />
-          <button type="submit" class="btn btn-danger">Xóa</button>
-        </form>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa <strong>Hóa đơn #@Model.MaHoaDon</strong> không?</p>
+                <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form asp-action="Delete" method="post" style="display:inline;">
+                    <input type="hidden" asp-for="MaHoaDon" />
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

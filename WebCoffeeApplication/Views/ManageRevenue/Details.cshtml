@@ -1,91 +1,91 @@
 @model HoaDon
 
 @{
-  ViewData["Title"] = "Chi tiết doanh thu";
+    ViewData["Title"] = "Chi tiết doanh thu";
 }
 
 <h1>Chi tiết doanh thu hóa đơn #@Model.MaHoaDon</h1>
 
 <!-- Bước 1: Hiển thị thông tin tổng quan của hóa đơn đã thanh toán. -->
 <div>
-  <hr />
-  <dl class="row">
-    <dt class="col-sm-3">Mã hóa đơn</dt>
-    <dd class="col-sm-9">@Model.MaHoaDon</dd>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã hóa đơn</dt>
+        <dd class="col-sm-9">@Model.MaHoaDon</dd>
 
-    <dt class="col-sm-3">Ngày thanh toán</dt>
-    <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
+        <dt class="col-sm-3">Ngày thanh toán</dt>
+        <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
 
-    <dt class="col-sm-3">Số bàn</dt>
-    <dd class="col-sm-9">@Model.SoBan</dd>
+        <dt class="col-sm-3">Số bàn</dt>
+        <dd class="col-sm-9">@Model.SoBan</dd>
 
-    <dt class="col-sm-3">Nhân viên</dt>
-    <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
+        <dt class="col-sm-3">Nhân viên</dt>
+        <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
 
-    <dt class="col-sm-3">Trạng thái</dt>
-    <dd class="col-sm-9"><span class="badge bg-success">Đã thanh toán</span></dd>
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9"><span class="badge bg-success">Đã thanh toán</span></dd>
 
-    <dt class="col-sm-3">Tổng tiền</dt>
-    <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
-  </dl>
+        <dt class="col-sm-3">Tổng tiền</dt>
+        <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
+    </dl>
 
-  <!-- Bước 2: Hiển thị danh sách sản phẩm đã bán trong hóa đơn. -->
-  <h4 class="mt-4">Danh sách sản phẩm đã bán</h4>
-  @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
-  {
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Đồ uống</th>
-          <th>Kích cỡ</th>
-          <th>Đơn giá</th>
-          <th>Số lượng</th>
-          <th>Thành tiền</th>
-          <th>Ghi chú</th>
-        </tr>
-      </thead>
-      <tbody>
-        @{
-          int stt = 1;
-        }
-        @foreach (var ct in Model.ChiTietHoaDons)
-        {
-          <tr>
-            <td>@stt</td>
-            <td>@ct.DoUong?.TenDoUong</td>
-            <td>
-              @{
-                var size = ct.DoUong?.ChiTietDoUongs
-                    ?.FirstOrDefault(d => d.GiaBan == ct.DonGia)
-                    ?.KichCo;
-              }
-              @size
-            </td>
-            <td>@ct.DonGia?.ToString("N0")đ</td>
-            <td>@ct.SoLuong</td>
-            <td>@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
-            <td>@ct.GhiChu</td>
-          </tr>
-          stt++;
-        }
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="5" class="text-end"><strong>Tổng cộng:</strong></td>
-          <td><strong>@Model.TongTien?.ToString("N0")đ</strong></td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-  }
-  else
-  {
-    <p class="text-muted">Hóa đơn này không có sản phẩm chi tiết.</p>
-  }
+    <!-- Bước 2: Hiển thị danh sách sản phẩm đã bán trong hóa đơn. -->
+    <h4 class="mt-4">Danh sách sản phẩm đã bán</h4>
+    @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Đồ uống</th>
+                    <th>Kích cỡ</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                }
+                @foreach (var ct in Model.ChiTietHoaDons)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td>@ct.DoUong?.TenDoUong</td>
+                        <td>
+                            @{
+                                var size = ct.DoUong?.ChiTietDoUongs
+                                    ?.FirstOrDefault(d => d.GiaBan == ct.DonGia)
+                                    ?.KichCo;
+                            }
+                            @size
+                        </td>
+                        <td>@ct.DonGia?.ToString("N0")đ</td>
+                        <td>@ct.SoLuong</td>
+                        <td>@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
+                        <td>@ct.GhiChu</td>
+                    </tr>
+                    stt++;
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" class="text-end"><strong>Tổng cộng:</strong></td>
+                    <td><strong>@Model.TongTien?.ToString("N0")đ</strong></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Hóa đơn này không có sản phẩm chi tiết.</p>
+    }
 
-  <!-- Bước 3: Điều hướng quay lại danh sách doanh thu. -->
-  <div class="mt-3">
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-  </div>
+    <!-- Bước 3: Điều hướng quay lại danh sách doanh thu. -->
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
 </div>

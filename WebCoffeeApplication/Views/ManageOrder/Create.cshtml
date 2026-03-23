@@ -1,407 +1,408 @@
 @model HoaDon
 
 @{
-  ViewData["Title"] = "Tạo hóa đơn mới";
-  var drinkSelectList = ViewBag.DrinkSelectList as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+    ViewData["Title"] = "Tạo hóa đơn mới";
+    var drinkSelectList = ViewBag.DrinkSelectList as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
 }
 
 <h1>Tạo hóa đơn mới</h1>
 
 <!-- Toast cảnh báo -->
 <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
-  <div id="warningToast" class="toast align-items-center text-light bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+    <div id="warningToast" class="toast align-items-center text-light bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Đóng"></button>
+        </div>
     </div>
-  </div>
 </div>
 
 <hr />
 <form asp-action="Create" method="post" id="orderForm">
-  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-  <div class="row">
-    <div class="col-md-6">
-      <div class="form-group mb-3">
-        <label asp-for="SoBan" class="control-label">Số bàn</label>
-        <input asp-for="SoBan" class="form-control" type="number" min="1" />
-        <span asp-validation-for="SoBan" class="text-danger"></span>
-      </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label asp-for="SoBan" class="control-label">Số bàn</label>
+                <input asp-for="SoBan" class="form-control" type="number" min="1" />
+                <span asp-validation-for="SoBan" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group mb-3">
+                <label asp-for="TrangThai" class="control-label">Trạng thái</label>
+                <select asp-for="TrangThai" class="form-control">
+                    <option value="1">Đang xử lý</option>
+                    <option value="2">Đã lên món</option>
+                    <option value="0">Hủy đơn hàng</option>
+                </select>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
-      <div class="form-group mb-3">
-        <label asp-for="TrangThai" class="control-label">Trạng thái</label>
-        <select asp-for="TrangThai" class="form-control">
-          <option value="1">Đang xử lý</option>
-          <option value="2">Đã lên món</option>
-          <option value="0">Hủy đơn hàng</option>
-        </select>
-        <span asp-validation-for="TrangThai" class="text-danger"></span>
-      </div>
+
+    <h4 class="mt-3">Chi tiết đồ uống</h4>
+    <style>
+            #orderItemsTable {
+                width: 100%;
+                table-layout: fixed;
+            }
+
+                #orderItemsTable thead,
+                #orderItemsTable tfoot {
+                    display: table;
+                    width: calc(100% - var(--order-scrollbar-width, 0px));
+                    table-layout: fixed;
+                }
+
+            #orderItemsBody {
+                display: block;
+                max-height: 165px;
+                overflow-y: auto;
+            }
+
+                #orderItemsBody tr {
+                    display: table;
+                    width: 100%;
+                    table-layout: fixed;
+                }
+    </style>
+    <table class="table table-bordered" id="orderItemsTable">
+        <thead>
+            <tr>
+                <th style="width: 35%;">Đồ uống</th>
+                <th style="width: 15%;">Đơn giá</th>
+                <th style="width: 10%;">Số lượng</th>
+                <th style="width: 15%;">Thành tiền</th>
+                <th style="width: 15%;">Ghi chú</th>
+                <th style="width: 10%;"></th>
+            </tr>
+        </thead>
+        <tbody id="orderItemsBody">
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" style="width: 60%;" class="text-end"><strong>Tổng cộng:</strong></td>
+                <td style="width: 15%;"><strong id="totalAmount">0đ</strong></td>
+                <td colspan="2" style="width: 25%;"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <button type="button" class="btn btn-success btn-sm mb-3" id="addItemBtn">
+        <i class="bi bi-plus-circle"></i> Thêm đồ uống
+    </button>
+
+    <div class="form-group mt-3">
+        <input type="submit" value="Tạo hóa đơn" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary" id="backToIndexLink">Quay lại</a>
     </div>
-  </div>
-
-  <h4 class="mt-3">Chi tiết đồ uống</h4>
-  <style>
-    #orderItemsTable {
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    #orderItemsTable thead,
-    #orderItemsTable tfoot {
-      display: table;
-      width: calc(100% - var(--order-scrollbar-width, 0px));
-      table-layout: fixed;
-    }
-
-    #orderItemsBody {
-      display: block;
-      max-height: 165px;
-      overflow-y: auto;
-    }
-
-    #orderItemsBody tr {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-    }
-  </style>
-  <table class="table table-bordered" id="orderItemsTable">
-    <thead>
-      <tr>
-        <th style="width: 35%;">Đồ uống</th>
-        <th style="width: 15%;">Đơn giá</th>
-        <th style="width: 10%;">Số lượng</th>
-        <th style="width: 15%;">Thành tiền</th>
-        <th style="width: 15%;">Ghi chú</th>
-        <th style="width: 10%;"></th>
-      </tr>
-    </thead>
-    <tbody id="orderItemsBody">
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="3" style="width: 60%;" class="text-end"><strong>Tổng cộng:</strong></td>
-        <td style="width: 15%;"><strong id="totalAmount">0đ</strong></td>
-        <td colspan="2" style="width: 25%;"></td>
-      </tr>
-    </tfoot>
-  </table>
-
-  <button type="button" class="btn btn-success btn-sm mb-3" id="addItemBtn">
-    <i class="bi bi-plus-circle"></i> Thêm đồ uống
-  </button>
-
-  <div class="form-group mt-3">
-    <input type="submit" value="Tạo hóa đơn" class="btn btn-primary" />
-    <a asp-action="Index" class="btn btn-secondary" id="backToIndexLink">Quay lại</a>
-  </div>
 </form>
 
 <div class="modal fade" id="leavePageModal" tabindex="-1" aria-labelledby="leavePageModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title" id="leavePageModalLabel">Xác nhận rời trang</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-      </div>
-      <div class="modal-body">
-        Bạn chưa lưu hóa đơn. Bạn có chắc chắn muốn quay lại không?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ở lại</button>
-        <button type="button" class="btn btn-warning" id="confirmLeaveBtn">Rời trang</button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="leavePageModalLabel">Xác nhận rời trang</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                Bạn chưa lưu hóa đơn. Bạn có chắc chắn muốn quay lại không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ở lại</button>
+                <button type="button" class="btn btn-warning" id="confirmLeaveBtn">Rời trang</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @section Scripts {
-  @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-  }
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Bước 0: Khởi tạo biến trạng thái và các thành phần DOM cần dùng trong toàn bộ form.
-        var itemIndex = 0;
-        var isSubmitting = false;
-        var initialState = '';
-        var pendingBackUrl = '';
-        var drinkOptions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(drinkSelectList?.Select(d => new { d.Value, d.Text })));
-      var existingItems = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
-        Model?.ChiTietHoaDons?.Select(ct => new {
-          MaDoUong = ct.MaDoUong,
-          DonGia = ct.DonGia,
-          SoLuong = ct.SoLuong,
-          GhiChu = ct.GhiChu
-        }) ?? Enumerable.Empty<object>()
-      ));
-        var orderForm = document.getElementById('orderForm');
-        var backToIndexLink = document.getElementById('backToIndexLink');
-        var leavePageModal = new bootstrap.Modal(document.getElementById('leavePageModal'));
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Bước 0: Khởi tạo biến trạng thái và các thành phần DOM cần dùng trong toàn bộ form.
+            var itemIndex = 0;
+            var isSubmitting = false;
+            var initialState = '';
+            var pendingBackUrl = '';
+            var drinkOptions = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(drinkSelectList?.Select(d => new { d.Value, d.Text })));
+          var existingItems = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                    Model?.ChiTietHoaDons?.Select(ct => new
+                    {
+                          MaDoUong = ct.MaDoUong,
+                          DonGia = ct.DonGia,
+                          SoLuong = ct.SoLuong,
+                          GhiChu = ct.GhiChu
+                    }) ?? Enumerable.Empty<object>()
+                ));
+            var orderForm = document.getElementById('orderForm');
+            var backToIndexLink = document.getElementById('backToIndexLink');
+            var leavePageModal = new bootstrap.Modal(document.getElementById('leavePageModal'));
 
-        // Bước 1: Sinh HTML option cho dropdown đồ uống từ dữ liệu đã nạp.
-        function createOptionHtml() {
-            var html = '<option value="">-- Chọn đồ uống --</option>';
-            drinkOptions.forEach(function (d) {
-                html += '<option value="' + d.Value + '">' + d.Text + '</option>';
-            });
-            return html;
-        }
-
-        // Bước 2: Chuẩn hóa số tiền sang định dạng tiền tệ VN.
-        function formatVND(value) {
-            var num = parseInt(value);
-            if (isNaN(num) || num === 0) return '0';
-            return num.toLocaleString('vi-VN');
-        }
-
-        // Bước 3: Hiển thị toast cảnh báo (1 chuỗi hoặc danh sách lỗi).
-        function showWarningToast(messages) {
-            var toastBody = document.getElementById('toastMessage');
-            if (Array.isArray(messages)) {
-                toastBody.innerHTML = '';
-                var ul = document.createElement('ul');
-                ul.className = 'mb-0 ps-3';
-                messages.forEach(function (msg) {
-                    var li = document.createElement('li');
-                    li.textContent = msg;
-                    ul.appendChild(li);
+            // Bước 1: Sinh HTML option cho dropdown đồ uống từ dữ liệu đã nạp.
+            function createOptionHtml() {
+                var html = '<option value="">-- Chọn đồ uống --</option>';
+                drinkOptions.forEach(function (d) {
+                    html += '<option value="' + d.Value + '">' + d.Text + '</option>';
                 });
-                toastBody.appendChild(ul);
-            } else {
-                toastBody.textContent = messages;
+                return html;
             }
-            var toastEl = document.getElementById('warningToast');
-            var toast = new bootstrap.Toast(toastEl);
-            toast.show();
-        }
 
-        // Bước 4: Tính thành tiền từng dòng và tổng tiền toàn hóa đơn.
-        function updateTotal() {
-            var total = 0;
-            document.querySelectorAll('.item-row').forEach(function (row) {
-                var price = parseFloat(row.querySelector('.item-price').value) || 0;
-                var qty = parseInt(row.querySelector('.item-qty').value) || 0;
-                var subtotal = price * qty;
-                row.querySelector('.item-subtotal').textContent = formatVND(subtotal) + 'đ';
-                total += subtotal;
+            // Bước 2: Chuẩn hóa số tiền sang định dạng tiền tệ VN.
+            function formatVND(value) {
+                var num = parseInt(value);
+                if (isNaN(num) || num === 0) return '0';
+                return num.toLocaleString('vi-VN');
+            }
+
+            // Bước 3: Hiển thị toast cảnh báo (1 chuỗi hoặc danh sách lỗi).
+            function showWarningToast(messages) {
+                var toastBody = document.getElementById('toastMessage');
+                if (Array.isArray(messages)) {
+                    toastBody.innerHTML = '';
+                    var ul = document.createElement('ul');
+                    ul.className = 'mb-0 ps-3';
+                    messages.forEach(function (msg) {
+                        var li = document.createElement('li');
+                        li.textContent = msg;
+                        ul.appendChild(li);
+                    });
+                    toastBody.appendChild(ul);
+                } else {
+                    toastBody.textContent = messages;
+                }
+                var toastEl = document.getElementById('warningToast');
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+
+            // Bước 4: Tính thành tiền từng dòng và tổng tiền toàn hóa đơn.
+            function updateTotal() {
+                var total = 0;
+                document.querySelectorAll('.item-row').forEach(function (row) {
+                    var price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    var qty = parseInt(row.querySelector('.item-qty').value) || 0;
+                    var subtotal = price * qty;
+                    row.querySelector('.item-subtotal').textContent = formatVND(subtotal) + 'đ';
+                    total += subtotal;
+                });
+                document.getElementById('totalAmount').textContent = formatVND(total) + 'đ';
+              syncOrderTableWidth();
+            }
+
+            // Bước 5: Đồng bộ độ rộng header/footer với tbody khi có scrollbar.
+            function syncOrderTableWidth() {
+              var body = document.getElementById('orderItemsBody');
+              var table = document.getElementById('orderItemsTable');
+              if (!body || !table) {
+                return;
+              }
+
+              var scrollbarWidth = body.offsetWidth - body.clientWidth;
+              table.style.setProperty('--order-scrollbar-width', scrollbarWidth + 'px');
+            }
+
+            // Bước 6: Tìm option tương ứng theo mã đồ uống + đơn giá để khôi phục dữ liệu cũ.
+            function findDrinkOptionValue(maDoUong, donGia) {
+              for (var i = 0; i < drinkOptions.length; i++) {
+                var parts = drinkOptions[i].Value.split('|');
+                if (parseInt(parts[0]) === maDoUong && parseFloat(parts[1]) === donGia) {
+                  return drinkOptions[i].Value;
+                }
+              }
+
+              for (var i = 0; i < drinkOptions.length; i++) {
+                var parts = drinkOptions[i].Value.split('|');
+                if (parseInt(parts[0]) === maDoUong) {
+                  return drinkOptions[i].Value;
+                }
+              }
+
+              return '';
+            }
+
+              // Bước 7: Đọc trạng thái hiện tại của form để so sánh thay đổi chưa lưu.
+              function getFormState() {
+                var rows = [];
+                document.querySelectorAll('.item-row').forEach(function (row) {
+                  rows.push({
+                    drink: row.querySelector('.item-drink').value || '',
+                    qty: row.querySelector('.item-qty').value || '',
+                    note: row.querySelector('input[name*=".GhiChu"]').value || ''
+                  });
+                });
+
+                return {
+                  soBan: document.getElementById('SoBan').value || '',
+                  trangThai: document.getElementById('TrangThai').value || '',
+                  rows: rows
+                };
+              }
+
+              // Bước 8: So sánh trạng thái hiện tại với trạng thái ban đầu.
+              function hasUnsavedChanges() {
+                return JSON.stringify(getFormState()) !== initialState;
+              }
+
+            // Bước 9: Thêm mới một dòng chi tiết đồ uống và gắn sự kiện liên quan.
+            function addItemRow(maDoUong, donGia, soLuong, ghiChu, selectedValue, shouldFocus) {
+                var idx = itemIndex++;
+                var row = document.createElement('tr');
+                row.className = 'item-row';
+                row.innerHTML =
+                '<td style="width: 35%;">' +
+                        '<select class="form-control item-drink" onchange="window.onDrinkChange(this, ' + idx + ')">' +
+                            createOptionHtml() +
+                        '</select>' +
+                        '<input type="hidden" name="chiTietHoaDons[' + idx + '].MaDoUong" class="item-maDoUong" value="' + (maDoUong || '') + '" />' +
+                        '<input type="hidden" name="chiTietHoaDons[' + idx + '].DonGia" class="item-price" value="' + (donGia || '') + '" />' +
+                    '</td>' +
+                '<td style="width: 15%;"><span class="item-price-display">' + (donGia ? formatVND(donGia) + 'đ' : '') + '</span></td>' +
+                '<td style="width: 10%;"><input type="number" name="chiTietHoaDons[' + idx + '].SoLuong" class="form-control item-qty" min="1" value="' + (soLuong || 1) + '" /></td>' +
+                '<td style="width: 15%;"><span class="item-subtotal">0đ</span></td>' +
+                '<td style="width: 15%;"><input type="text" name="chiTietHoaDons[' + idx + '].GhiChu" class="form-control" value="' + (ghiChu || '') + '" /></td>' +
+                '<td style="width: 10%;"><button type="button" class="btn btn-sm btn-danger btn-remove-item">Xóa</button></td>';
+
+                document.getElementById('orderItemsBody').appendChild(row);
+
+                if (selectedValue) {
+                    row.querySelector('.item-drink').value = selectedValue;
+                }
+
+                if (shouldFocus) {
+                  setTimeout(function () {
+                    row.querySelector('.item-drink').focus();
+                  }, 0);
+                }
+
+                row.querySelector('.item-qty').addEventListener('input', updateTotal);
+                row.querySelector('.btn-remove-item').addEventListener('click', function () {
+                    row.remove();
+                    updateTotal();
+                });
+
+                updateTotal();
+            }
+
+            // Bước 10: Xử lý khi đổi đồ uống: cập nhật mã, giá, gộp dòng trùng và tính lại tổng.
+            window.onDrinkChange = function (select, idx) {
+                var row = select.closest('tr');
+                var val = select.value;
+                if (val) {
+                    var parts = val.split('|');
+                    // Kiểm tra xem đồ uống cùng tên và kích cỡ đã tồn tại chưa
+                    var existingRow = null;
+                    document.querySelectorAll('.item-row').forEach(function (r) {
+                        if (r !== row && r.querySelector('.item-drink').value === val) {
+                            existingRow = r;
+                        }
+                    });
+                    if (existingRow) {
+                        // Cộng dồn số lượng vào dòng đã tồn tại
+                        var existingQty = parseInt(existingRow.querySelector('.item-qty').value) || 0;
+                        var currentQty = parseInt(row.querySelector('.item-qty').value) || 1;
+                        existingRow.querySelector('.item-qty').value = existingQty + currentQty;
+                        row.remove();
+                        showWarningToast('Đồ uống đã tồn tại trong đơn hàng. Đã cập nhật số lượng.');
+                        updateTotal();
+                        return;
+                    }
+                    row.querySelector('.item-maDoUong').value = parts[0];
+                    row.querySelector('.item-price').value = parts[1];
+                    row.querySelector('.item-price-display').textContent = formatVND(parts[1]) + 'đ';
+                } else {
+                    row.querySelector('.item-maDoUong').value = '';
+                    row.querySelector('.item-price').value = '';
+                    row.querySelector('.item-price-display').textContent = '';
+                }
+                updateTotal();
+            };
+
+            // Bước 11: Khi bấm "Thêm đồ uống" thì thêm một dòng mới và focus ngay dropdown dòng đó.
+            document.getElementById('addItemBtn').addEventListener('click', function () {
+              addItemRow('', '', 1, '', '', true);
             });
-            document.getElementById('totalAmount').textContent = formatVND(total) + 'đ';
-          syncOrderTableWidth();
-        }
 
-        // Bước 5: Đồng bộ độ rộng header/footer với tbody khi có scrollbar.
-        function syncOrderTableWidth() {
-          var body = document.getElementById('orderItemsBody');
-          var table = document.getElementById('orderItemsTable');
-          if (!body || !table) {
+            // Bước 12: Validate dữ liệu trước khi submit để chặn các lỗi cơ bản ngay trên client.
+            document.getElementById('orderForm').addEventListener('submit', function (e) {
+                var errors = [];
+                var soBan = document.getElementById('SoBan');
+                if (!soBan.value || parseInt(soBan.value) < 1) {
+                    errors.push('Vui lòng nhập số bàn hợp lệ.');
+                }
+
+                var rows = document.querySelectorAll('.item-row');
+                if (rows.length === 0) {
+                    errors.push('Vui lòng thêm ít nhất một món đồ uống.');
+                }
+
+                rows.forEach(function (row, i) {
+                    var drink = row.querySelector('.item-drink');
+                    if (!drink.value) {
+                        errors.push('Dòng ' + (i + 1) + ': Vui lòng chọn đồ uống.');
+                    }
+                    var qty = row.querySelector('.item-qty');
+                    if (!qty.value || parseInt(qty.value) < 1) {
+                        errors.push('Dòng ' + (i + 1) + ': Số lượng phải lớn hơn 0.');
+                    }
+                });
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    showWarningToast(errors);
+                    return false;
+                }
+
+          isSubmitting = true;
+            });
+
+            // Bước 13: Khởi tạo danh sách dòng chi tiết (ưu tiên dữ liệu đã nhập trước đó nếu có).
+            if (existingItems && existingItems.length > 0) {
+              existingItems.forEach(function (item) {
+                var selectedVal = findDrinkOptionValue(item.MaDoUong, item.DonGia);
+                addItemRow(item.MaDoUong, item.DonGia, item.SoLuong, item.GhiChu || '', selectedVal);
+              });
+            } else {
+              addItemRow('', '', 1, '', '');
+            }
+
+        // Bước 14: Lưu snapshot ban đầu để theo dõi thay đổi chưa lưu.
+        initialState = JSON.stringify(getFormState());
+
+        // Bước 15: Chặn điều hướng "Quay lại" nếu còn thay đổi chưa lưu, mở modal xác nhận.
+        backToIndexLink.addEventListener('click', function (e) {
+          if (isSubmitting || !hasUnsavedChanges()) {
             return;
           }
 
-          var scrollbarWidth = body.offsetWidth - body.clientWidth;
-          table.style.setProperty('--order-scrollbar-width', scrollbarWidth + 'px');
-        }
-
-        // Bước 6: Tìm option tương ứng theo mã đồ uống + đơn giá để khôi phục dữ liệu cũ.
-        function findDrinkOptionValue(maDoUong, donGia) {
-          for (var i = 0; i < drinkOptions.length; i++) {
-            var parts = drinkOptions[i].Value.split('|');
-            if (parseInt(parts[0]) === maDoUong && parseFloat(parts[1]) === donGia) {
-              return drinkOptions[i].Value;
-            }
-          }
-
-          for (var i = 0; i < drinkOptions.length; i++) {
-            var parts = drinkOptions[i].Value.split('|');
-            if (parseInt(parts[0]) === maDoUong) {
-              return drinkOptions[i].Value;
-            }
-          }
-
-          return '';
-        }
-
-          // Bước 7: Đọc trạng thái hiện tại của form để so sánh thay đổi chưa lưu.
-          function getFormState() {
-            var rows = [];
-            document.querySelectorAll('.item-row').forEach(function (row) {
-              rows.push({
-                drink: row.querySelector('.item-drink').value || '',
-                qty: row.querySelector('.item-qty').value || '',
-                note: row.querySelector('input[name*=".GhiChu"]').value || ''
-              });
-            });
-
-            return {
-              soBan: document.getElementById('SoBan').value || '',
-              trangThai: document.getElementById('TrangThai').value || '',
-              rows: rows
-            };
-          }
-
-          // Bước 8: So sánh trạng thái hiện tại với trạng thái ban đầu.
-          function hasUnsavedChanges() {
-            return JSON.stringify(getFormState()) !== initialState;
-          }
-
-        // Bước 9: Thêm mới một dòng chi tiết đồ uống và gắn sự kiện liên quan.
-        function addItemRow(maDoUong, donGia, soLuong, ghiChu, selectedValue, shouldFocus) {
-            var idx = itemIndex++;
-            var row = document.createElement('tr');
-            row.className = 'item-row';
-            row.innerHTML =
-            '<td style="width: 35%;">' +
-                    '<select class="form-control item-drink" onchange="window.onDrinkChange(this, ' + idx + ')">' +
-                        createOptionHtml() +
-                    '</select>' +
-                    '<input type="hidden" name="chiTietHoaDons[' + idx + '].MaDoUong" class="item-maDoUong" value="' + (maDoUong || '') + '" />' +
-                    '<input type="hidden" name="chiTietHoaDons[' + idx + '].DonGia" class="item-price" value="' + (donGia || '') + '" />' +
-                '</td>' +
-            '<td style="width: 15%;"><span class="item-price-display">' + (donGia ? formatVND(donGia) + 'đ' : '') + '</span></td>' +
-            '<td style="width: 10%;"><input type="number" name="chiTietHoaDons[' + idx + '].SoLuong" class="form-control item-qty" min="1" value="' + (soLuong || 1) + '" /></td>' +
-            '<td style="width: 15%;"><span class="item-subtotal">0đ</span></td>' +
-            '<td style="width: 15%;"><input type="text" name="chiTietHoaDons[' + idx + '].GhiChu" class="form-control" value="' + (ghiChu || '') + '" /></td>' +
-            '<td style="width: 10%;"><button type="button" class="btn btn-sm btn-danger btn-remove-item">Xóa</button></td>';
-
-            document.getElementById('orderItemsBody').appendChild(row);
-
-            if (selectedValue) {
-                row.querySelector('.item-drink').value = selectedValue;
-            }
-
-            if (shouldFocus) {
-              setTimeout(function () {
-                row.querySelector('.item-drink').focus();
-              }, 0);
-            }
-
-            row.querySelector('.item-qty').addEventListener('input', updateTotal);
-            row.querySelector('.btn-remove-item').addEventListener('click', function () {
-                row.remove();
-                updateTotal();
-            });
-
-            updateTotal();
-        }
-
-        // Bước 10: Xử lý khi đổi đồ uống: cập nhật mã, giá, gộp dòng trùng và tính lại tổng.
-        window.onDrinkChange = function (select, idx) {
-            var row = select.closest('tr');
-            var val = select.value;
-            if (val) {
-                var parts = val.split('|');
-                // Kiểm tra xem đồ uống cùng tên và kích cỡ đã tồn tại chưa
-                var existingRow = null;
-                document.querySelectorAll('.item-row').forEach(function (r) {
-                    if (r !== row && r.querySelector('.item-drink').value === val) {
-                        existingRow = r;
-                    }
-                });
-                if (existingRow) {
-                    // Cộng dồn số lượng vào dòng đã tồn tại
-                    var existingQty = parseInt(existingRow.querySelector('.item-qty').value) || 0;
-                    var currentQty = parseInt(row.querySelector('.item-qty').value) || 1;
-                    existingRow.querySelector('.item-qty').value = existingQty + currentQty;
-                    row.remove();
-                    showWarningToast('Đồ uống đã tồn tại trong đơn hàng. Đã cập nhật số lượng.');
-                    updateTotal();
-                    return;
-                }
-                row.querySelector('.item-maDoUong').value = parts[0];
-                row.querySelector('.item-price').value = parts[1];
-                row.querySelector('.item-price-display').textContent = formatVND(parts[1]) + 'đ';
-            } else {
-                row.querySelector('.item-maDoUong').value = '';
-                row.querySelector('.item-price').value = '';
-                row.querySelector('.item-price-display').textContent = '';
-            }
-            updateTotal();
-        };
-
-        // Bước 11: Khi bấm "Thêm đồ uống" thì thêm một dòng mới và focus ngay dropdown dòng đó.
-        document.getElementById('addItemBtn').addEventListener('click', function () {
-          addItemRow('', '', 1, '', '', true);
+          e.preventDefault();
+          pendingBackUrl = this.href;
+          leavePageModal.show();
         });
 
-        // Bước 12: Validate dữ liệu trước khi submit để chặn các lỗi cơ bản ngay trên client.
-        document.getElementById('orderForm').addEventListener('submit', function (e) {
-            var errors = [];
-            var soBan = document.getElementById('SoBan');
-            if (!soBan.value || parseInt(soBan.value) < 1) {
-                errors.push('Vui lòng nhập số bàn hợp lệ.');
-            }
-
-            var rows = document.querySelectorAll('.item-row');
-            if (rows.length === 0) {
-                errors.push('Vui lòng thêm ít nhất một món đồ uống.');
-            }
-
-            rows.forEach(function (row, i) {
-                var drink = row.querySelector('.item-drink');
-                if (!drink.value) {
-                    errors.push('Dòng ' + (i + 1) + ': Vui lòng chọn đồ uống.');
-                }
-                var qty = row.querySelector('.item-qty');
-                if (!qty.value || parseInt(qty.value) < 1) {
-                    errors.push('Dòng ' + (i + 1) + ': Số lượng phải lớn hơn 0.');
-                }
-            });
-
-            if (errors.length > 0) {
-                e.preventDefault();
-                showWarningToast(errors);
-                return false;
-            }
-
-      isSubmitting = true;
+        // Bước 16: Người dùng xác nhận rời trang -> chuyển hướng sang URL đã lưu.
+        document.getElementById('confirmLeaveBtn').addEventListener('click', function () {
+          isSubmitting = true;
+          window.location.href = pendingBackUrl;
         });
 
-        // Bước 13: Khởi tạo danh sách dòng chi tiết (ưu tiên dữ liệu đã nhập trước đó nếu có).
-        if (existingItems && existingItems.length > 0) {
-          existingItems.forEach(function (item) {
-            var selectedVal = findDrinkOptionValue(item.MaDoUong, item.DonGia);
-            addItemRow(item.MaDoUong, item.DonGia, item.SoLuong, item.GhiChu || '', selectedVal);
-          });
-        } else {
-          addItemRow('', '', 1, '', '');
-        }
+        // Bước 17: Cảnh báo khi người dùng reload/đóng tab trong lúc còn thay đổi chưa lưu.
+        window.addEventListener('beforeunload', function (e) {
+          if (isSubmitting || !hasUnsavedChanges()) {
+            return;
+          }
 
-    // Bước 14: Lưu snapshot ban đầu để theo dõi thay đổi chưa lưu.
-    initialState = JSON.stringify(getFormState());
+          e.preventDefault();
+          e.returnValue = '';
+        });
 
-    // Bước 15: Chặn điều hướng "Quay lại" nếu còn thay đổi chưa lưu, mở modal xác nhận.
-    backToIndexLink.addEventListener('click', function (e) {
-      if (isSubmitting || !hasUnsavedChanges()) {
-        return;
-      }
-
-      e.preventDefault();
-      pendingBackUrl = this.href;
-      leavePageModal.show();
-    });
-
-    // Bước 16: Người dùng xác nhận rời trang -> chuyển hướng sang URL đã lưu.
-    document.getElementById('confirmLeaveBtn').addEventListener('click', function () {
-      isSubmitting = true;
-      window.location.href = pendingBackUrl;
-    });
-
-    // Bước 17: Cảnh báo khi người dùng reload/đóng tab trong lúc còn thay đổi chưa lưu.
-    window.addEventListener('beforeunload', function (e) {
-      if (isSubmitting || !hasUnsavedChanges()) {
-        return;
-      }
-
-      e.preventDefault();
-      e.returnValue = '';
-    });
-
-    // Bước 18: Đồng bộ lại độ rộng bảng khi resize và tại thời điểm khởi tạo ban đầu.
-    window.addEventListener('resize', syncOrderTableWidth);
-    syncOrderTableWidth();
-    });
-  </script>
+        // Bước 18: Đồng bộ lại độ rộng bảng khi resize và tại thời điểm khởi tạo ban đầu.
+        window.addEventListener('resize', syncOrderTableWidth);
+        syncOrderTableWidth();
+        });
+    </script>
 }

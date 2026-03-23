@@ -1,92 +1,92 @@
 @model HoaDon
 
 @{
-  ViewData["Title"] = "Xác nhận thanh toán";
+    ViewData["Title"] = "Xác nhận thanh toán";
 }
 
 <h1>Xác nhận thanh toán hóa đơn #@Model.MaHoaDon</h1>
 
 <!-- Bước 1: Hiển thị thông tin tổng quan của hóa đơn trước khi thanh toán. -->
 <div>
-  <hr />
-  <dl class="row">
-    <dt class="col-sm-3">Mã hóa đơn</dt>
-    <dd class="col-sm-9">@Model.MaHoaDon</dd>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã hóa đơn</dt>
+        <dd class="col-sm-9">@Model.MaHoaDon</dd>
 
-    <dt class="col-sm-3">Ngày tạo</dt>
-    <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
+        <dt class="col-sm-3">Ngày tạo</dt>
+        <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
 
-    <dt class="col-sm-3">Số bàn</dt>
-    <dd class="col-sm-9">@Model.SoBan</dd>
+        <dt class="col-sm-3">Số bàn</dt>
+        <dd class="col-sm-9">@Model.SoBan</dd>
 
-    <dt class="col-sm-3">Nhân viên</dt>
-    <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
+        <dt class="col-sm-3">Nhân viên</dt>
+        <dd class="col-sm-9">@Model.TaiKhoan?.HoTen</dd>
 
-    <dt class="col-sm-3">Trạng thái hiện tại</dt>
-    <dd class="col-sm-9">
-      @* Bước 1.1: Hiển thị nhãn trạng thái hiện tại của hóa đơn. *@
-      @switch (Model.TrangThai)
-      {
-        case TrangThaiHoaDon.DangXuLy:
-          <span class="badge bg-warning text-dark">Đang xử lý</span>
-          break;
-        case TrangThaiHoaDon.DaLenMon:
-          <span class="badge bg-info text-dark">Đã lên món</span>
-          break;
-        case TrangThaiHoaDon.DaThanhToan:
-          <span class="badge bg-success">Đã thanh toán</span>
-          break;
-        case TrangThaiHoaDon.HuyDonHang:
-          <span class="badge bg-danger">Hủy đơn hàng</span>
-          break;
-        default:
-          <span class="badge bg-secondary">Không xác định</span>
-          break;
-      }
-    </dd>
+        <dt class="col-sm-3">Trạng thái hiện tại</dt>
+        <dd class="col-sm-9">
+            @* Bước 1.1: Hiển thị nhãn trạng thái hiện tại của hóa đơn. *@
+            @switch (Model.TrangThai)
+            {
+                case TrangThaiHoaDon.DangXuLy:
+                    <span class="badge bg-warning text-dark">Đang xử lý</span>
+                    break;
+                case TrangThaiHoaDon.DaLenMon:
+                    <span class="badge bg-info text-dark">Đã lên món</span>
+                    break;
+                case TrangThaiHoaDon.DaThanhToan:
+                    <span class="badge bg-success">Đã thanh toán</span>
+                    break;
+                case TrangThaiHoaDon.HuyDonHang:
+                    <span class="badge bg-danger">Hủy đơn hàng</span>
+                    break;
+                default:
+                    <span class="badge bg-secondary">Không xác định</span>
+                    break;
+            }
+        </dd>
 
-    <dt class="col-sm-3">Tổng tiền cần thanh toán</dt>
-    <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
-  </dl>
+        <dt class="col-sm-3">Tổng tiền cần thanh toán</dt>
+        <dd class="col-sm-9"><strong>@Model.TongTien?.ToString("N0")đ</strong></dd>
+    </dl>
 
-  <!-- Bước 2: Hiển thị chi tiết món để đối soát trước khi xác nhận thanh toán. -->
-  @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
-  {
-    @* Bước 2.1: Bảng chi tiết giúp đối soát số lượng và tiền trước khi xác nhận. *@
-    <h5>Chi tiết đồ uống:</h5>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Đồ uống</th>
-          <th>Đơn giá</th>
-          <th>Số lượng</th>
-          <th>Thành tiền</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var ct in Model.ChiTietHoaDons)
-        {
-          <tr>
-            <td>@ct.DoUong?.TenDoUong</td>
-            <td>@ct.DonGia?.ToString("N0")đ</td>
-            <td>@ct.SoLuong</td>
-            <td>@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  }
+    <!-- Bước 2: Hiển thị chi tiết món để đối soát trước khi xác nhận thanh toán. -->
+    @if (Model.ChiTietHoaDons != null && Model.ChiTietHoaDons.Any())
+    {
+        @* Bước 2.1: Bảng chi tiết giúp đối soát số lượng và tiền trước khi xác nhận. *@
+        <h5>Chi tiết đồ uống:</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Đồ uống</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ct in Model.ChiTietHoaDons)
+                {
+                    <tr>
+                        <td>@ct.DoUong?.TenDoUong</td>
+                        <td>@ct.DonGia?.ToString("N0")đ</td>
+                        <td>@ct.SoLuong</td>
+                        <td>@(((ct.DonGia ?? 0) * (ct.SoLuong ?? 0)).ToString("N0"))đ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 
-  <!-- Bước 3: Người dùng xác nhận thanh toán hoặc quay lại. -->
-  <div class="form-group mt-3">
-    @* Bước 3.1: Gửi yêu cầu POST để chốt trạng thái sang Đã thanh toán. *@
-    <form asp-action="Payment" method="post" style="display:inline;">
-      @Html.AntiForgeryToken()
-      <input type="hidden" name="id" value="@Model.MaHoaDon" />
-      <button type="submit" class="btn btn-success">Xác nhận thanh toán</button>
-    </form>
+    <!-- Bước 3: Người dùng xác nhận thanh toán hoặc quay lại. -->
+    <div class="form-group mt-3">
+        @* Bước 3.1: Gửi yêu cầu POST để chốt trạng thái sang Đã thanh toán. *@
+        <form asp-action="Payment" method="post" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.MaHoaDon" />
+            <button type="submit" class="btn btn-success">Xác nhận thanh toán</button>
+        </form>
 
-    @* Bước 3.2: Hủy thao tác hiện tại và quay lại trang chi tiết hóa đơn. *@
-    <a asp-action="Details" asp-route-id="@Model.MaHoaDon" class="btn btn-secondary">Quay lại</a>
-  </div>
+        @* Bước 3.2: Hủy thao tác hiện tại và quay lại trang chi tiết hóa đơn. *@
+        <a asp-action="Details" asp-route-id="@Model.MaHoaDon" class="btn btn-secondary">Quay lại</a>
+    </div>
 </div>

@@ -1,11 +1,11 @@
 ﻿@model WebCoffeeApplication.Models.TaiKhoan
 
 @{
-  ViewData["Title"] = "Xóa tài khoản";
-  var currentUserIdRaw = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-  int.TryParse(currentUserIdRaw, out var currentUserId);
-  var isSelfDelete = Model.Id == currentUserId;
-  var isLastChuQuanDelete = Model.VaiTro == 1 && !isSelfDelete && ViewBag.LastChuQuanId is int lastChuQuanId && Model.Id == lastChuQuanId;
+    ViewData["Title"] = "Xóa tài khoản";
+    var currentUserIdRaw = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    int.TryParse(currentUserIdRaw, out var currentUserId);
+    var isSelfDelete = Model.Id == currentUserId;
+    var isLastChuQuanDelete = Model.VaiTro == 1 && !isSelfDelete && ViewBag.LastChuQuanId is int lastChuQuanId && Model.Id == lastChuQuanId;
 }
 
 <h1>Xóa tài khoản</h1>
@@ -13,73 +13,73 @@
 <h3>Bạn có chắc chắn muốn xóa tài khoản này?</h3>
 
 <div>
-  <!-- Thông tin tài khoản cần xóa để người dùng xác nhận lại -->
-  <hr />
-  <dl class="row">
-    <dt class="col-sm-3">Họ và tên</dt>
-    <dd class="col-sm-9">@Model.HoTen</dd>
+    <!-- Thông tin tài khoản cần xóa để người dùng xác nhận lại -->
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Họ và tên</dt>
+        <dd class="col-sm-9">@Model.HoTen</dd>
 
-    <dt class="col-sm-3">Vai trò</dt>
-    <dd class="col-sm-9">
-      @if (Model.VaiTro == 1)
-      {
-        <span class="badge bg-danger">Chủ quán</span>
-      }
-      else
-      {
-        <span class="badge bg-info text-dark">Nhân viên</span>
-      }
-    </dd>
+        <dt class="col-sm-3">Vai trò</dt>
+        <dd class="col-sm-9">
+            @if (Model.VaiTro == 1)
+            {
+                <span class="badge bg-danger">Chủ quán</span>
+            }
+            else
+            {
+                <span class="badge bg-info text-dark">Nhân viên</span>
+            }
+        </dd>
 
-    <dt class="col-sm-3">Tên đăng nhập</dt>
-    <dd class="col-sm-9">@Model.UserName</dd>
+        <dt class="col-sm-3">Tên đăng nhập</dt>
+        <dd class="col-sm-9">@Model.UserName</dd>
 
-    <dt class="col-sm-3">Email</dt>
-    <dd class="col-sm-9">@Model.Email</dd>
-  </dl>
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+    </dl>
 
-  @if (isSelfDelete)
-  {
-    <div class="alert alert-warning">
-      Bạn không thể tự xóa chính tài khoản đang đăng nhập.
-    </div>
-  }
-  else if (isLastChuQuanDelete)
-  {
-    <div class="alert alert-warning">
-      Không thể xóa tài khoản Chủ quán cuối cùng.
-    </div>
-  }
-
-  <!-- Nhóm nút mở modal xác nhận hoặc quay lại danh sách -->
-  <div class="form-group">
-    @if (!isSelfDelete && !isLastChuQuanDelete)
+    @if (isSelfDelete)
     {
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
+        <div class="alert alert-warning">
+            Bạn không thể tự xóa chính tài khoản đang đăng nhập.
+        </div>
     }
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-  </div>
+    else if (isLastChuQuanDelete)
+    {
+        <div class="alert alert-warning">
+            Không thể xóa tài khoản Chủ quán cuối cùng.
+        </div>
+    }
+
+    <!-- Nhóm nút mở modal xác nhận hoặc quay lại danh sách -->
+    <div class="form-group">
+        @if (!isSelfDelete && !isLastChuQuanDelete)
+        {
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Xóa</button>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </div>
 </div>
 
 <!-- Modal xác nhận xóa lần cuối trước khi submit -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
-      </div>
-      <div class="modal-body">
-        <p>Bạn có chắc chắn muốn xóa tài khoản <strong>@Model.HoTen</strong> không?</p>
-        <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-        <form asp-action="Delete" method="post" style="display:inline;">
-          <input type="hidden" asp-for="Id" />
-          <button type="submit" class="btn btn-danger">Xóa</button>
-        </form>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa tài khoản <strong>@Model.HoTen</strong> không?</p>
+                <p class="text-danger"><small>Hành động này không thể hoàn tác.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form asp-action="Delete" method="post" style="display:inline;">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
