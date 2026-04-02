@@ -63,67 +63,6 @@ namespace WebCoffeeApplication.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Register(string? returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-
-            if (ModelState.IsValid)
-            {
-                var normalizedEmail = _userManager.NormalizeEmail(model.Email);
-                var emailExists = await _userManager.Users
-                    .AnyAsync(x => x.NormalizedEmail == normalizedEmail);
-
-                if (emailExists)
-                {
-                    ModelState.AddModelError(nameof(RegisterViewModel.Email), "Email đã tồn tại.");
-                    return View(model);
-                }
-
-                var user = new TaiKhoan
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    HoTen = model.HoTen,
-                    SDT = model.SDT,
-                    VaiTro = 2,
-                    NgayTao = DateTime.Now,
-                    NgayCapNhat = DateTime.Now
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    if (await _roleManager.RoleExistsAsync("NhanVien"))
-                    {
-                        await _userManager.AddToRoleAsync(user, "NhanVien");
-                    }
-
-                    _logger.LogInformation("User created a new account with password.");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToLocal(returnUrl);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
-
-            return View(model);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
